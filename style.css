@@ -226,3 +226,7 @@ h1 {
   backdrop-filter: blur(3px);
   z-index: 5;
 }
+
+.hidden {
+  display: none;
+}
