@@ -24,8 +24,10 @@ btnRoll.addEventListener('click', () => {
   // https://stackoverflow.com/questions/8228281/what-is-the-function-construct-in-javascript
   // Just to test the IIFE feature
   (function (randNum) {
-    diceImg.src = 'dice-' + randNum + '.png';
+    diceImg.src = `dice-${randNum}.png`;
   })(randNum);
+
+  if (diceImg.classList.contains('hidden')) diceImg.classList.remove('hidden');
 
   playerXCurScore = document.querySelector('#current--' + currentPlayer);
   if (randNum != 1) {
@@ -62,8 +64,8 @@ document.addEventListener('keydown', event => {
 
 //--------------------------------------------------------------------------------------------------------
 function switchPlayer(curPlayer) {
-  currentPlayer = curPlayer === 0 ? 1 : 0;
   playerXCurScore.textContent = 0;
+  currentPlayer = curPlayer === 0 ? 1 : 0;
   player0.classList.toggle('player--active');
   player1.classList.toggle('player--active');
 }
