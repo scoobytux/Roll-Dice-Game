@@ -1,59 +1,72 @@
 'use strict';
 
 const diceImg = document.querySelector('.dice');
+
 const btnRoll = document.querySelector('.btn--roll');
 const btnHold = document.querySelector('.btn--hold');
+const btnNew = document.querySelector('.btn--new');
+
 const modal = document.querySelector('.modal');
 const overlay = document.querySelector('.overlay');
 const closeModal = document.querySelector('.close-modal');
-const btnNew = document.querySelector('.btn--new');
 
-let playerXCurScore = undefined,
-  playerXFinalScore = undefined;
+const players = document.querySelectorAll('.player');
+const player0 = document.querySelector('.player--0');
+const player1 = document.querySelector('.player--1');
 
-let player0 = document.querySelector('.player--0'),
-  player1 = document.querySelector('.player--1');
+let currentPlayer, currentScore, randNum, isPlaying;
+const totalScores = [0, 0];
 
-let currentPlayer = 0; // Player 1 plays first
-let randNum = undefined;
-let isPlaying = true;
+initGame();
+function chooseFirstPlayer(player) {
+  if (isPlaying || currentScore) return;
+  currentPlayer = player;
+  document
+    .querySelector(`.player--${currentPlayer}`)
+    .classList.add('player--active');
+  isPlaying = true;
+}
 //--------------------------------------------------------------------------------------------------------
+players[0].addEventListener('click', () => {
+  chooseFirstPlayer(0);
+});
+players[1].addEventListener('click', () => {
+  chooseFirstPlayer(1);
+});
+
 btnRoll.addEventListener('click', () => {
   if (!isPlaying) return;
 
-  let randNum = Math.trunc(Math.random() * 6) + 1;
+  // Generate random number from 1 - 6
+  randNum = Math.trunc(Math.random() * 6) + 1;
 
-  // @Keyword: Immediately-Invoked Function Expression (IIFE)
-  // https://stackoverflow.com/questions/8228281/what-is-the-function-construct-in-javascript
-  // Just to test the IIFE feature
-  (function (randNum) {
-    diceImg.src = `dice-${randNum}.png`;
-  })(randNum);
+  diceImg.src = `dice-${randNum}.png`;
+  diceImg.classList.remove('hidden');
 
-  if (diceImg.classList.contains('hidden')) diceImg.classList.remove('hidden');
-
-  playerXCurScore = document.querySelector('#current--' + currentPlayer);
   if (randNum != 1) {
-    playerXCurScore.textContent = Number(playerXCurScore.textContent) + randNum;
+    currentScore += randNum;
+    document.querySelector('#current--' + currentPlayer).textContent =
+      currentScore;
     return;
   }
 
   // Switch player when randNum == 1
-  switchPlayer(currentPlayer);
+  switchPlayer();
 });
 
 btnHold.addEventListener('click', () => {
   if (!isPlaying) return;
 
-  playerXFinalScore = document.querySelector('#score--' + currentPlayer);
-  playerXFinalScore.textContent =
-    Number(playerXFinalScore.textContent) + Number(playerXCurScore.textContent);
+  totalScores[currentPlayer] += currentScore;
+  document.querySelector(`#score--${currentPlayer}`).textContent =
+    totalScores[currentPlayer];
 
-  if (Number(playerXFinalScore.textContent) >= 50) {
+  if (totalScores[currentPlayer] >= 50) {
     isPlaying = false;
 
     diceImg.classList.add('hidden');
-    playerXCurScore.textContent = 'YOU WIN 🏆';
+    document.querySelector(`#current--${currentPlayer}`).textContent =
+      'YOU WIN 🏆';
 
     document
       .querySelector(`.player--${currentPlayer}`)
@@ -61,11 +74,12 @@ btnHold.addEventListener('click', () => {
     document
       .querySelector(`.player--${currentPlayer}`)
       .classList.remove('player--active');
+
     return;
   }
 
   // Switch player when pressing Hold button
-  switchPlayer(currentPlayer);
+  switchPlayer();
 });
 
 document.addEventListener('keydown', event => {
@@ -82,28 +96,32 @@ document.addEventListener('keydown', event => {
   if (event.key === 'Escape') closeWindow();
 });
 
-// Reset the game
-btnNew.addEventListener('click', () => {
-  currentPlayer = 0;
-  player0.classList.add('player--active');
+// Start another game
+btnNew.addEventListener('click', initGame);
+
+//--------------------------------------------------------------------------------------------------------
+function initGame() {
+  isPlaying = false;
+  totalScores[0] = totalScores[1] = 0;
+  currentScore = 0;
+
+  diceImg.classList.add('hidden');
+
+  player0.classList.remove('player--active');
   player1.classList.remove('player--active');
   player0.classList.remove('player--winner');
   player1.classList.remove('player--winner');
-
-  diceImg.classList.add('hidden');
 
   document.querySelector('#current--0').textContent = 0;
   document.querySelector('#score--0').textContent = 0;
   document.querySelector('#current--1').textContent = 0;
   document.querySelector('#score--1').textContent = 0;
+}
 
-  isPlaying = true;
-});
-
-//--------------------------------------------------------------------------------------------------------
-function switchPlayer(curPlayer) {
-  playerXCurScore.textContent = 0;
-  currentPlayer = curPlayer === 0 ? 1 : 0;
+function switchPlayer() {
+  currentScore = 0;
+  document.querySelector(`#current--${currentPlayer}`).textContent = 0;
+  currentPlayer = currentPlayer === 0 ? 1 : 0;
   player0.classList.toggle('player--active');
   player1.classList.toggle('player--active');
 }
