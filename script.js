@@ -1,11 +1,11 @@
 'use strict';
 
-const diceImg = document.querySelector('.dice'),
-  btnRoll = document.querySelector('.btn--roll'),
-  btnHold = document.querySelector('.btn--hold'),
-  modal = document.querySelector('.modal'),
-  overlay = document.querySelector('.overlay'),
-  closeModal = document.querySelector('.close-modal');
+const diceImg = document.querySelector('.dice');
+const btnRoll = document.querySelector('.btn--roll');
+const btnHold = document.querySelector('.btn--hold');
+const modal = document.querySelector('.modal');
+const overlay = document.querySelector('.overlay');
+const closeModal = document.querySelector('.close-modal');
 
 let playerXCurScore = undefined,
   playerXFinalScore = undefined;
@@ -15,9 +15,11 @@ let player0 = document.querySelector('.player--0'),
 
 let currentPlayer = 0; // Player 1 plays first
 let randNum = undefined;
-
+let isPlaying = true;
 //--------------------------------------------------------------------------------------------------------
 btnRoll.addEventListener('click', () => {
+  if (!isPlaying) return;
+
   let randNum = Math.trunc(Math.random() * 6) + 1;
 
   // @Keyword: Immediately-Invoked Function Expression (IIFE)
@@ -40,9 +42,25 @@ btnRoll.addEventListener('click', () => {
 });
 
 btnHold.addEventListener('click', () => {
+  if (!isPlaying) return;
+
   playerXFinalScore = document.querySelector('#score--' + currentPlayer);
   playerXFinalScore.textContent =
     Number(playerXFinalScore.textContent) + Number(playerXCurScore.textContent);
+
+  if (Number(playerXFinalScore.textContent) >= 50) {
+    isPlaying = false;
+
+    diceImg.classList.add('hidden');
+
+    document
+      .querySelector(`.player--${currentPlayer}`)
+      .classList.add('player--winner');
+    document
+      .querySelector(`.player--${currentPlayer}`)
+      .classList.remove('player--active');
+    return;
+  }
 
   // Switch player when pressing Hold button
   switchPlayer(currentPlayer);
