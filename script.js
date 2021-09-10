@@ -6,6 +6,7 @@ const btnHold = document.querySelector('.btn--hold');
 const modal = document.querySelector('.modal');
 const overlay = document.querySelector('.overlay');
 const closeModal = document.querySelector('.close-modal');
+const btnNew = document.querySelector('.btn--new');
 
 let playerXCurScore = undefined,
   playerXFinalScore = undefined;
@@ -52,6 +53,7 @@ btnHold.addEventListener('click', () => {
     isPlaying = false;
 
     diceImg.classList.add('hidden');
+    playerXCurScore.textContent = 'YOU WIN 🏆';
 
     document
       .querySelector(`.player--${currentPlayer}`)
@@ -78,6 +80,24 @@ closeModal.addEventListener('click', closeWindow);
 overlay.addEventListener('click', closeWindow);
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape') closeWindow();
+});
+
+// Reset the game
+btnNew.addEventListener('click', () => {
+  currentPlayer = 0;
+  player0.classList.add('player--active');
+  player1.classList.remove('player--active');
+  player0.classList.remove('player--winner');
+  player1.classList.remove('player--winner');
+
+  diceImg.classList.add('hidden');
+
+  document.querySelector('#current--0').textContent = 0;
+  document.querySelector('#score--0').textContent = 0;
+  document.querySelector('#current--1').textContent = 0;
+  document.querySelector('#score--1').textContent = 0;
+
+  isPlaying = true;
 });
 
 //--------------------------------------------------------------------------------------------------------
